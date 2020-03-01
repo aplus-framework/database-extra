@@ -18,8 +18,8 @@
 	],
 	"require": {
 		"php": ">=7.4",
-		"natanfelles/database": "^1.1",
-		"natanfelles/autoload": "^1.2"
+		"natanfelles/autoload": "^1.2",
+		"natanfelles/database": "^1.1"
 	},
 	"require-dev": {
 		"ext-xdebug": "*",
