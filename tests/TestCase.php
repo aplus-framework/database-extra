@@ -17,6 +17,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
 	protected function setDatabase() : Database
 	{
+		\var_dump('GETENV: ' . \getenv('DB_USERNAME'));
 		if (static::$database === null) {
 			static::$database = new Database([
 				'username' => \getenv('DB_USERNAME'),
