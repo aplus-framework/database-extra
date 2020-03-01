@@ -1,0 +1,56 @@
+{
+	"name": "natanfelles/database-extra",
+	"type": "project",
+	"description": "The Database Extra package",
+	"keywords": [
+		"database",
+		"extra",
+		"migration",
+		"seed"
+	],
+	"homepage": "https://the-framework.gitlab.io/libraries/database-extra.html",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Natan Felles",
+			"email": "natanfelles@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=7.4",
+		"natanfelles/database": "^1.1",
+		"natanfelles/autoload": "^1.2"
+	},
+	"require-dev": {
+		"ext-xdebug": "*",
+		"ergebnis/composer-normalize": "^2.0",
+		"natanfelles/coding-standard": "^1.0",
+		"phpmd/phpmd": "^2.8",
+		"phpstan/phpstan": "^0.12",
+		"phpunit/phpunit": "^8.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"Framework\\Database\\Extra\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\Database\\Extra\\": "tests/"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"scripts": {
+		"post-update-cmd": [
+			"composer dump-autoload"
+		]
+	},
+	"support": {
+		"email": "natanfelles@gmail.com",
+		"issues": "https://gitlab.com/the-framework/libraries/database-extra/issues",
+		"wiki": "https://gitlab.com/the-framework/libraries/database-extra/wikis/home",
+		"source": "https://gitlab.com/the-framework/libraries/database-extra",
+		"docs": "https://the-framework.gitlab.io/libraries/database-extra/docs/"
+	}
+}
