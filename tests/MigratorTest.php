@@ -1,7 +1,6 @@
 <?php namespace Tests\Database\Extra;
 
 use Framework\Database\Extra\Migrator;
-use Tests\Database\Extra\TestCase;
 
 class MigratorTest extends TestCase
 {

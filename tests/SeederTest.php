@@ -2,7 +2,6 @@
 
 use Tests\Database\Extra\Seeds\T1;
 use Tests\Database\Extra\Seeds\T2;
-use Tests\Database\Extra\TestCase;
 
 class SeederTest extends TestCase
 {
