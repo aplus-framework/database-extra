@@ -9,7 +9,7 @@
 		"seed"
 	],
 	"homepage": "https://the-framework.gitlab.io/libraries/database-extra.html",
-	"license": "proprietary",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Natan Felles",
