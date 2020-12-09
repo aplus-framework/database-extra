@@ -130,8 +130,8 @@ class Migrator
 			->columns('version')
 			->from($this->getMigrationTable())
 			->orderByDesc(static function () {
-					return 'CAST(`version` AS SIGNED INTEGER)';
-				})
+				return 'CAST(`version` AS SIGNED INTEGER)';
+			})
 			->orderByAsc('name')
 			->limit(1)
 			->run()
