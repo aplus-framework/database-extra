@@ -5,7 +5,7 @@ use Framework\Database\Extra\Migration;
 
 class PostsMigration extends Migration
 {
-	public function up()
+	public function up() : void
 	{
 		$this->database->createTable()
 			->table('Posts')
@@ -15,7 +15,7 @@ class PostsMigration extends Migration
 			})->run();
 	}
 
-	public function down()
+	public function down() : void
 	{
 		$this->database->dropTable()->table('Posts')->ifExists()->run();
 	}

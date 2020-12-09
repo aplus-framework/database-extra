@@ -19,7 +19,7 @@ abstract class Seeder
 		$this->database = $database;
 	}
 
-	abstract public function run();
+	abstract public function run() : void;
 
 	/**
 	 * @param array|Seeder|Seeder[]|string $seeds

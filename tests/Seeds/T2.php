@@ -4,7 +4,7 @@ use Framework\Database\Extra\Seeder;
 
 class T2 extends Seeder
 {
-	public function run()
+	public function run() : void
 	{
 		echo __CLASS__ . \PHP_EOL;
 	}

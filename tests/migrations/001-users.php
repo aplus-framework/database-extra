@@ -5,7 +5,7 @@ use Framework\Database\Extra\Migration;
 
 class UsersMigration extends Migration
 {
-	public function up()
+	public function up() : void
 	{
 		$this->database->createTable()
 			->table('Users')
@@ -15,7 +15,7 @@ class UsersMigration extends Migration
 			})->run();
 	}
 
-	public function down()
+	public function down() : void
 	{
 		$this->database->dropTable()->table('Users')->ifExists()->run();
 	}

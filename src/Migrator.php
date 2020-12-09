@@ -4,6 +4,9 @@ use Framework\Autoload\Autoloader;
 use Framework\Autoload\Locator;
 use Framework\Database\Database;
 use Framework\Database\Definition\Table\TableDefinition;
+use Generator;
+use InvalidArgumentException;
+use ReflectionException;
 
 /**
  * Class Migrator.
@@ -16,6 +19,8 @@ class Migrator
 	protected string $migrationTable = 'Migrations';
 	/**
 	 * Added files.
+	 *
+	 * @var array|string[]
 	 */
 	protected array $files = [];
 	protected Database $database;
@@ -37,7 +42,7 @@ class Migrator
 	/**
 	 * Add migrations files.
 	 *
-	 * @param array $filenames
+	 * @param array|string[] $filenames
 	 *
 	 * @return $this
 	 */
@@ -53,13 +58,18 @@ class Migrator
 	/**
 	 * Get Migration files.
 	 *
-	 * @return array
+	 * @return array|string[]
 	 */
 	public function getFiles() : array
 	{
 		return $this->files;
 	}
 
+	/**
+	 * @param string $table
+	 *
+	 * @return $this
+	 */
 	public function setMigrationTable(string $table)
 	{
 		$this->migrationTable = $table;
@@ -76,6 +86,11 @@ class Migrator
 		return $this->getFileParts($file)[0];
 	}
 
+	/**
+	 * @param string $file
+	 *
+	 * @return array|string[]
+	 */
 	private function getFileParts(string $file) : array
 	{
 		$file = \substr($file, \strrpos($file, \DIRECTORY_SEPARATOR) + 1);
@@ -87,7 +102,7 @@ class Migrator
 		return \substr($this->getFileParts($file)[1], 0, -4);
 	}
 
-	protected function prepare()
+	protected function prepare() : void
 	{
 		$exists = $this->database->query(
 			'SHOW TABLES LIKE ' . $this->database->quote($this->getMigrationTable())
@@ -115,8 +130,8 @@ class Migrator
 			->columns('version')
 			->from($this->getMigrationTable())
 			->orderByDesc(static function () {
-				return 'CAST(`version` AS SIGNED INTEGER)';
-			})
+					return 'CAST(`version` AS SIGNED INTEGER)';
+				})
 			->orderByAsc('name')
 			->limit(1)
 			->run()
@@ -126,7 +141,7 @@ class Migrator
 	/**
 	 * Get Migrations list from Database.
 	 *
-	 * @return array
+	 * @return array|mixed[]
 	 */
 	public function getVersions() : array
 	{
@@ -143,9 +158,9 @@ class Migrator
 	/**
 	 * Migrate down all Migration files.
 	 *
-	 * @return \Generator
+	 * @return Generator
 	 */
-	public function migrateDown() : \Generator
+	public function migrateDown() : Generator
 	{
 		yield from $this->migrateTo('');
 	}
@@ -153,9 +168,9 @@ class Migrator
 	/**
 	 * Migrate up all Migration files.
 	 *
-	 * @return \Generator
+	 * @return Generator
 	 */
-	public function migrateUp() : \Generator
+	public function migrateUp() : Generator
 	{
 		yield from $this->migrateTo(\array_key_last($this->getFiles()));
 	}
@@ -165,18 +180,18 @@ class Migrator
 	 *
 	 * @param string $version
 	 *
-	 * @throws \InvalidArgumentException if migration version is not found
+	 * @throws InvalidArgumentException if migration version is not found
 	 *
-	 * @return \Generator
+	 * @return Generator
 	 */
-	public function migrateTo(string $version) : \Generator
+	public function migrateTo(string $version) : Generator
 	{
 		$current_version = $this->getCurrentVersion();
 		if ($version === $current_version) {
 			return;
 		}
 		if ($version !== '' && ! isset($this->getFiles()[$version])) {
-			throw new \InvalidArgumentException("Migration version not found: {$version}");
+			throw new InvalidArgumentException("Migration version not found: {$version}");
 		}
 		$direction = 'up';
 		if ($version < $current_version) {
@@ -192,6 +207,12 @@ class Migrator
 		yield from $this->migrate($files, $direction);
 	}
 
+	/**
+	 * @param string $current
+	 * @param string $target
+	 *
+	 * @return array|string[]
+	 */
 	protected function getRangeDown(string $current, string $target) : array
 	{
 		$files = [];
@@ -204,6 +225,12 @@ class Migrator
 		return $files;
 	}
 
+	/**
+	 * @param string $current
+	 * @param string $target
+	 *
+	 * @return array|string[]
+	 */
 	protected function getRangeUp(string $current, string $target) : array
 	{
 		$files = [];
@@ -215,7 +242,15 @@ class Migrator
 		return $files;
 	}
 
-	protected function migrate(array $files, string $direction) : \Generator
+	/**
+	 * @param array  $files
+	 * @param string $direction
+	 *
+	 * @throws ReflectionException
+	 *
+	 * @return Generator
+	 */
+	protected function migrate(array $files, string $direction) : Generator
 	{
 		foreach ($files as $version => $file) {
 			$className = $this->locator->getClassName($file);
