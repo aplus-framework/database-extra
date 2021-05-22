@@ -1,15 +1,14 @@
----
 version: "3.0"
-
 services:
   package:
     image: natanfelles/package
-    container_name: database-extra
+    container_name: database-extra-package
     working_dir: /package
     volumes:
       - .:/package
     depends_on:
       - mariadb
+    tty: true
   mariadb:
     image: mariadb
     restart: always
