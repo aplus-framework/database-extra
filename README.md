@@ -1,4 +1,4 @@
-# Framework Database Extra Package
+# The Framework Database Extra Library
 
 - [Homepage](https://the-framework.gitlab.io/libraries/database-extra.html)
 - [API Documentation](https://the-framework.gitlab.io/libraries/database-extra/docs/)
