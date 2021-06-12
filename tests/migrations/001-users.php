@@ -9,7 +9,7 @@ class UsersMigration extends Migration
 	{
 		$this->database->createTable()
 			->table('Users')
-			->definition(static function (TableDefinition $definition) {
+			->definition(static function (TableDefinition $definition) : void {
 				$definition->column('id')->int()->primaryKey();
 				$definition->column('name')->varchar(32);
 			})->run();

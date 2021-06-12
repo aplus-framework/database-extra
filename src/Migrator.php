@@ -112,7 +112,7 @@ class Migrator
 		}
 		$this->database->createTable()
 			->table($this->getMigrationTable())
-			->definition(static function (TableDefinition $definition) {
+			->definition(static function (TableDefinition $definition) : void {
 				$definition->column('version')->varchar(32)->primaryKey();
 				$definition->column('name')->varchar(255)->notNull();
 				$definition->column('migratedAt')->datetime()->notNull();

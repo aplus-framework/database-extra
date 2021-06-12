@@ -2,12 +2,9 @@
 
 use Framework\Database\Extra\Migrator;
 
-class MigratorTest extends TestCase
+final class MigratorTest extends TestCase
 {
-	/**
-	 * @var Migrator
-	 */
-	protected $migrator;
+	protected Migrator $migrator;
 
 	public function setup() : void
 	{
@@ -36,18 +33,18 @@ class MigratorTest extends TestCase
 			->run();
 	}
 
-	public function testCurrentVersion()
+	public function testCurrentVersion() : void
 	{
 		$this->assertEquals('', $this->migrator->getCurrentVersion());
 	}
 
-	protected function migrateTo(string $version)
+	protected function migrateTo(string $version) : void
 	{
 		foreach ($this->migrator->migrateTo($version) as $item) {
 		}
 	}
 
-	public function testMigrateTo()
+	public function testMigrateTo() : void
 	{
 		$this->assertEquals('', $this->migrator->getCurrentVersion());
 		$this->migrateTo('001');
@@ -65,7 +62,7 @@ class MigratorTest extends TestCase
 		$this->migrateTo('005');
 	}
 
-	public function testMigrateUpAndDown()
+	public function testMigrateUpAndDown() : void
 	{
 		$this->assertCount(0, $this->migrator->getVersions());
 		$versions = [];
@@ -84,7 +81,7 @@ class MigratorTest extends TestCase
 		$this->assertCount(0, $this->migrator->getVersions());
 	}
 
-	public function testPrepare()
+	public function testPrepare() : void
 	{
 		$migrator = new Migrator(static::$database);
 		$migrator->addFiles($this->migrator->getFiles());

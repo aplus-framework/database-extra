@@ -3,12 +3,12 @@
 use Tests\Database\Extra\Seeds\T1;
 use Tests\Database\Extra\Seeds\T2;
 
-class SeederTest extends TestCase
+final class SeederTest extends TestCase
 {
 	/**
 	 * @runInSeparateProcess
 	 */
-	public function testRunCall()
+	public function testRunCall() : void
 	{
 		\ob_start();
 		(new T1(static::$database))->run();
