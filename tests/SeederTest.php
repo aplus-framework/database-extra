@@ -3,7 +3,7 @@
 use Tests\Database\Extra\Seeds\T1;
 use Tests\Database\Extra\Seeds\T2;
 
-class SeederTest extends TestCase
+final class SeederTest extends TestCase
 {
 	/**
 	 * @runInSeparateProcess

@@ -2,12 +2,9 @@
 
 use Framework\Database\Database;
 
-class TestCase extends \PHPUnit\Framework\TestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * @var Database
-	 */
-	protected static $database;
+	protected static ?Database $database;
 
 	public function __construct(...$params)
 	{
@@ -17,7 +14,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
 	protected function setDatabase() : Database
 	{
-		if (static::$database === null) {
+		if ( ! isset(static::$database)) {
 			static::$database = new Database([
 				'username' => \getenv('DB_USERNAME'),
 				'password' => \getenv('DB_PASSWORD'),

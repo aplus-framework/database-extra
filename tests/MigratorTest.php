@@ -2,12 +2,9 @@
 
 use Framework\Database\Extra\Migrator;
 
-class MigratorTest extends TestCase
+final class MigratorTest extends TestCase
 {
-	/**
-	 * @var Migrator
-	 */
-	protected $migrator;
+	protected Migrator $migrator;
 
 	public function setup() : void
 	{
