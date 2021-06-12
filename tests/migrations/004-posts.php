@@ -9,7 +9,7 @@ class PostsMigration extends Migration
 	{
 		$this->database->createTable()
 			->table('Posts')
-			->definition(static function (TableDefinition $definition) {
+			->definition(static function (TableDefinition $definition) : void {
 				$definition->column('id')->int()->primaryKey();
 				$definition->column('title')->varchar(255);
 			})->run();

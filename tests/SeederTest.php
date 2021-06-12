@@ -8,7 +8,7 @@ class SeederTest extends TestCase
 	/**
 	 * @runInSeparateProcess
 	 */
-	public function testRunCall()
+	public function testRunCall() : void
 	{
 		\ob_start();
 		(new T1(static::$database))->run();
