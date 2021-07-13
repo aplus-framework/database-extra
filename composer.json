@@ -4,9 +4,12 @@
     "description": "The Database Extra package",
     "keywords": [
         "database",
+        "database-extra",
         "extra",
         "migration",
-        "seed"
+        "migrator",
+        "seed",
+        "seeder"
     ],
     "homepage": "https://the-framework.gitlab.io/libraries/database-extra.html",
     "license": "MIT",
