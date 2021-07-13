@@ -1,7 +1,7 @@
 {
-    "name": "natanfelles/database-extra",
-    "type": "project",
-    "description": "The Database Extra package",
+    "name": "aplus/database-extra",
+    "type": "library",
+    "description": "Aplus Database Extra package",
     "keywords": [
         "database",
         "database-extra",
@@ -11,7 +11,7 @@
         "seed",
         "seeder"
     ],
-    "homepage": "https://the-framework.gitlab.io/libraries/database-extra.html",
+    "homepage": "https://aplus-framework.com/docs/database-extra",
     "license": "MIT",
     "authors": [
         {
@@ -51,9 +51,9 @@
     "prefer-stable": true,
     "support": {
         "email": "natanfelles@gmail.com",
-        "issues": "https://gitlab.com/the-framework/libraries/database-extra/issues",
-        "wiki": "https://gitlab.com/the-framework/libraries/database-extra/wikis/home",
-        "source": "https://gitlab.com/the-framework/libraries/database-extra",
-        "docs": "https://the-framework.gitlab.io/libraries/database-extra/docs/"
+        "issues": "https://gitlab.com/aplus-framework/libraries/database-extra/issues",
+        "wiki": "https://gitlab.com/aplus-framework/libraries/database-extra/wikis/home",
+        "source": "https://gitlab.com/aplus-framework/libraries/database-extra",
+        "docs": "https://aplus-framework.gitlab.io/libraries/database-extra/docs/"
     }
 }
