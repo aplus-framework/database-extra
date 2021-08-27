@@ -15,7 +15,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected static ?Database $database;
 
-    public function __construct(...$params)
+    public function __construct(mixed ...$params)
     {
         $this->setDatabase();
         parent::__construct(...$params);

@@ -56,9 +56,9 @@ class Migrator
      *
      * @param string[] $filenames
      *
-     * @return $this
+     * @return static
      */
-    public function addFiles(array $filenames)
+    public function addFiles(array $filenames) : static
     {
         foreach ($filenames as $filename) {
             $this->files[$this->getFileVersion($filename)] = $filename;
@@ -80,9 +80,9 @@ class Migrator
     /**
      * @param string $table
      *
-     * @return $this
+     * @return static
      */
-    public function setMigrationTable(string $table)
+    public function setMigrationTable(string $table) : static
     {
         $this->migrationTable = $table;
         return $this;

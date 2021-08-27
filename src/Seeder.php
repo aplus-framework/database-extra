@@ -40,7 +40,7 @@ abstract class Seeder
      *
      * @param array<int,Seeder|string>|Seeder|string $seeds
      */
-    protected function call($seeds) : void
+    protected function call(array | Seeder | string $seeds) : void
     {
         if (\is_string($seeds)) {
             $seeds = [new $seeds($this->database)];
