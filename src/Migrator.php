@@ -15,6 +15,7 @@ use Framework\Database\Database;
 use Framework\Database\Definition\Table\TableDefinition;
 use Generator;
 use InvalidArgumentException;
+use ReflectionClass;
 use ReflectionException;
 
 /**
@@ -197,15 +198,15 @@ class Migrator
      */
     public function migrateTo(string $version) : Generator
     {
-        $current_version = $this->getCurrentVersion();
-        if ($version === $current_version) {
+        $currentVersion = $this->getCurrentVersion();
+        if ($version === $currentVersion) {
             return;
         }
         if ($version !== '' && ! isset($this->getFiles()[$version])) {
             throw new InvalidArgumentException("Migration version not found: {$version}");
         }
         $direction = 'up';
-        if ($version < $current_version) {
+        if ($version < $currentVersion) {
             $direction = 'down';
             $this->database->delete()
                 ->from($this->getMigrationTable())
@@ -213,8 +214,8 @@ class Migrator
                 ->run();
         }
         $files = $direction === 'up'
-            ? $this->getRangeUp($current_version, $version)
-            : $this->getRangeDown($current_version, $version);
+            ? $this->getRangeUp($currentVersion, $version)
+            : $this->getRangeDown($currentVersion, $version);
         yield from $this->migrate($files, $direction);
     }
 
@@ -269,7 +270,7 @@ class Migrator
                 continue;
             }
             require_once $file;
-            $class = new \ReflectionClass($className);
+            $class = new ReflectionClass($className);
             if ( ! $class->isInstantiable() || ! $class->isSubclassOf(Migration::class)) {
                 continue;
             }
