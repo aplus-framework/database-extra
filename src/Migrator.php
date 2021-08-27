@@ -32,7 +32,7 @@ class Migrator
     /**
      * Added files.
      *
-     * @var array|string[]
+     * @var array<string,string>
      */
     protected array $files = [];
     protected Database $database;
@@ -41,7 +41,7 @@ class Migrator
     /**
      * Migrator constructor.
      *
-     * @param Database     $database
+     * @param Database $database
      * @param Locator|null $locator
      */
     public function __construct(Database $database, Locator $locator = null)
@@ -54,7 +54,7 @@ class Migrator
     /**
      * Add migrations files.
      *
-     * @param array|string[] $filenames
+     * @param string[] $filenames
      *
      * @return $this
      */
@@ -70,7 +70,7 @@ class Migrator
     /**
      * Get Migration files.
      *
-     * @return array|string[]
+     * @return array<string,string>
      */
     public function getFiles() : array
     {
@@ -101,7 +101,7 @@ class Migrator
     /**
      * @param string $file
      *
-     * @return array|string[]
+     * @return array<int,string>
      */
     private function getFileParts(string $file) : array
     {
@@ -138,6 +138,7 @@ class Migrator
      */
     public function getCurrentVersion() : string
     {
+        // @phpstan-ignore-next-line
         return $this->database->select()
             ->columns('version')
             ->from($this->getMigrationTable())
@@ -153,7 +154,7 @@ class Migrator
     /**
      * Get Migrations list from Database.
      *
-     * @return array|mixed[]
+     * @return array<int,object>
      */
     public function getVersions() : array
     {
@@ -170,7 +171,9 @@ class Migrator
     /**
      * Migrate down all Migration files.
      *
-     * @return Generator
+     * @throws ReflectionException If migration class does not exist
+     *
+     * @return Generator<int,string>
      */
     public function migrateDown() : Generator
     {
@@ -180,7 +183,9 @@ class Migrator
     /**
      * Migrate up all Migration files.
      *
-     * @return Generator
+     * @throws ReflectionException If migration class does not exist
+     *
+     * @return Generator<int,string>
      */
     public function migrateUp() : Generator
     {
@@ -192,9 +197,10 @@ class Migrator
      *
      * @param string $version
      *
-     * @throws InvalidArgumentException if migration version is not found
+     * @throws InvalidArgumentException If migration version is not found
+     * @throws ReflectionException If migration class does not exist
      *
-     * @return Generator
+     * @return Generator<int,string>
      */
     public function migrateTo(string $version) : Generator
     {
@@ -223,7 +229,7 @@ class Migrator
      * @param string $current
      * @param string $target
      *
-     * @return array|string[]
+     * @return array<string,string>
      */
     protected function getRangeDown(string $current, string $target) : array
     {
@@ -241,7 +247,7 @@ class Migrator
      * @param string $current
      * @param string $target
      *
-     * @return array|string[]
+     * @return array<string,string>
      */
     protected function getRangeUp(string $current, string $target) : array
     {
@@ -255,12 +261,12 @@ class Migrator
     }
 
     /**
-     * @param array  $files
+     * @param array<string,string> $files
      * @param string $direction
      *
-     * @throws ReflectionException
+     * @throws ReflectionException If migration class does not exist
      *
-     * @return Generator
+     * @return Generator<int,string>
      */
     protected function migrate(array $files, string $direction) : Generator
     {
@@ -270,7 +276,7 @@ class Migrator
                 continue;
             }
             require_once $file;
-            $class = new ReflectionClass($className);
+            $class = new ReflectionClass($className); // @phpstan-ignore-line
             if ( ! $class->isInstantiable() || ! $class->isSubclassOf(Migration::class)) {
                 continue;
             }

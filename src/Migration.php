@@ -30,7 +30,13 @@ abstract class Migration
         $this->database = $database;
     }
 
+    /**
+     * Run migration up.
+     */
     abstract public function up() : void;
 
+    /**
+     * Run migration down.
+     */
     abstract public function down() : void;
 }

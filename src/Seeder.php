@@ -30,10 +30,15 @@ abstract class Seeder
         $this->database = $database;
     }
 
+    /**
+     * Run the Seeder.
+     */
     abstract public function run() : void;
 
     /**
-     * @param array|Seeder|Seeder[]|string $seeds
+     * Call seeders to run.
+     *
+     * @param array<int,Seeder|string>|Seeder|string $seeds
      */
     protected function call($seeds) : void
     {
