@@ -1,64 +1,73 @@
-<?php namespace Tests\Database\Extra;
+<?php
+/*
+ * This file is part of Aplus Framework Database Extra Library.
+ *
+ * (c) Natan Felles <natanfelles@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Tests\Database\Extra;
 
 use Framework\Database\Database;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-	protected static ?Database $database;
+    protected static ?Database $database;
 
-	public function __construct(...$params)
-	{
-		$this->setDatabase();
-		parent::__construct(...$params);
-	}
+    public function __construct(...$params)
+    {
+        $this->setDatabase();
+        parent::__construct(...$params);
+    }
 
-	protected function setDatabase() : Database
-	{
-		if ( ! isset(static::$database)) {
-			static::$database = new Database([
-				'username' => \getenv('DB_USERNAME'),
-				'password' => \getenv('DB_PASSWORD'),
-				'schema' => \getenv('DB_SCHEMA'),
-				'host' => \getenv('DB_HOST'),
-				'port' => \getenv('DB_PORT'),
-			]);
-		}
-		return static::$database;
-	}
+    protected function setDatabase() : Database
+    {
+        if ( ! isset(static::$database)) {
+            static::$database = new Database([
+                'username' => \getenv('DB_USERNAME'),
+                'password' => \getenv('DB_PASSWORD'),
+                'schema' => \getenv('DB_SCHEMA'),
+                'host' => \getenv('DB_HOST'),
+                'port' => \getenv('DB_PORT'),
+            ]);
+        }
+        return static::$database;
+    }
 
-	protected function resetDatabase() : void
-	{
-		static::$database = null;
-		$this->setDatabase();
-	}
+    protected function resetDatabase() : void
+    {
+        static::$database = null;
+        $this->setDatabase();
+    }
 
-	protected function dropDummyData() : void
-	{
-		static::$database->exec('DROP TABLE IF EXISTS `t1`');
-		static::$database->exec('DROP TABLE IF EXISTS `t2`');
-	}
+    protected function dropDummyData() : void
+    {
+        static::$database->exec('DROP TABLE IF EXISTS `t1`');
+        static::$database->exec('DROP TABLE IF EXISTS `t2`');
+    }
 
-	protected function createDummyData() : void
-	{
-		$this->dropDummyData();
-		static::$database->exec(
-			<<<'SQL'
-				CREATE TABLE `t1` (
-				  `c1` INT(11) AUTO_INCREMENT PRIMARY KEY,
-				  `c2` VARCHAR(255)
-				)
-				SQL
-		);
-		static::$database->exec(
-			<<<'SQL'
-				CREATE TABLE `t2` (
-				  `c1` INT(11) AUTO_INCREMENT PRIMARY KEY,
-				  `c2` VARCHAR(255)
-				)
-				SQL
-		);
-		static::$database->exec(
-			"INSERT INTO `t1` (`c2`) VALUES ('a'), ('b'), ('c'), ('d'), ('e')"
-		);
-	}
+    protected function createDummyData() : void
+    {
+        $this->dropDummyData();
+        static::$database->exec(
+            <<<'SQL'
+                CREATE TABLE `t1` (
+                  `c1` INT(11) AUTO_INCREMENT PRIMARY KEY,
+                  `c2` VARCHAR(255)
+                )
+                SQL
+        );
+        static::$database->exec(
+            <<<'SQL'
+                CREATE TABLE `t2` (
+                  `c1` INT(11) AUTO_INCREMENT PRIMARY KEY,
+                  `c2` VARCHAR(255)
+                )
+                SQL
+        );
+        static::$database->exec(
+            "INSERT INTO `t1` (`c2`) VALUES ('a'), ('b'), ('c'), ('d'), ('e')"
+        );
+    }
 }
