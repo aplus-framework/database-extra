@@ -22,7 +22,7 @@ final class SeederTest extends TestCase
         \ob_start();
         (new T1(static::$database))->run();
         $flush = \ob_get_clean();
-        $this->assertEquals(
+        self::assertSame(
             T1::class . \PHP_EOL
             . T2::class . \PHP_EOL
             . T2::class . \PHP_EOL

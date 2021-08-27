@@ -44,7 +44,7 @@ final class MigratorTest extends TestCase
 
     public function testCurrentVersion() : void
     {
-        $this->assertEquals('', $this->migrator->getCurrentVersion());
+        self::assertSame('', $this->migrator->getCurrentVersion());
     }
 
     protected function migrateTo(string $version) : void
@@ -55,17 +55,17 @@ final class MigratorTest extends TestCase
 
     public function testMigrateTo() : void
     {
-        $this->assertEquals('', $this->migrator->getCurrentVersion());
+        self::assertSame('', $this->migrator->getCurrentVersion());
         $this->migrateTo('001');
-        $this->assertEquals('001', $this->migrator->getCurrentVersion());
+        self::assertSame('001', $this->migrator->getCurrentVersion());
         $this->migrateTo('004');
-        $this->assertEquals('004', $this->migrator->getCurrentVersion());
+        self::assertSame('004', $this->migrator->getCurrentVersion());
         $this->migrateTo('004');
-        $this->assertEquals('004', $this->migrator->getCurrentVersion());
+        self::assertSame('004', $this->migrator->getCurrentVersion());
         $this->migrateTo('001');
-        $this->assertEquals('001', $this->migrator->getCurrentVersion());
+        self::assertSame('001', $this->migrator->getCurrentVersion());
         $this->migrateTo('');
-        $this->assertEquals('', $this->migrator->getCurrentVersion());
+        self::assertSame('', $this->migrator->getCurrentVersion());
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Migration version not found: 005');
         $this->migrateTo('005');
@@ -73,21 +73,21 @@ final class MigratorTest extends TestCase
 
     public function testMigrateUpAndDown() : void
     {
-        $this->assertCount(0, $this->migrator->getVersions());
+        self::assertCount(0, $this->migrator->getVersions());
         $versions = [];
         foreach ($this->migrator->migrateUp() as $version) {
             $versions[] = $version;
         }
-        $this->assertEquals(['001', '004'], $versions);
-        $this->assertEquals('004', $this->migrator->getCurrentVersion());
-        $this->assertCount(2, $this->migrator->getVersions());
+        self::assertSame(['001', '004'], $versions);
+        self::assertSame('004', $this->migrator->getCurrentVersion());
+        self::assertCount(2, $this->migrator->getVersions());
         $versions = [];
         foreach ($this->migrator->migrateDown() as $version) {
             $versions[] = $version;
         }
-        $this->assertEquals(['004', '001'], $versions);
-        $this->assertEquals('', $this->migrator->getCurrentVersion());
-        $this->assertCount(0, $this->migrator->getVersions());
+        self::assertSame(['004', '001'], $versions);
+        self::assertSame('', $this->migrator->getCurrentVersion());
+        self::assertCount(0, $this->migrator->getVersions());
     }
 
     public function testPrepare() : void
@@ -95,6 +95,6 @@ final class MigratorTest extends TestCase
         $migrator = new Migrator(static::$database);
         $migrator->addFiles($this->migrator->getFiles());
         $migrator->setMigrationTable($this->migrator->getMigrationTable());
-        $this->assertCount(0, $this->migrator->getVersions());
+        self::assertCount(0, $this->migrator->getVersions());
     }
 }
