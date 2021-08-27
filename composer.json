@@ -1,7 +1,7 @@
 {
     "name": "aplus/database-extra",
     "type": "library",
-    "description": "Aplus Database Extra package",
+    "description": "Aplus Framework Database Extra Library",
     "keywords": [
         "database",
         "database-extra",
@@ -11,23 +11,24 @@
         "seed",
         "seeder"
     ],
-    "homepage": "https://aplus-framework.com/docs/database-extra",
+    "homepage": "https://docs.aplus-framework.com/guides/libraries/database-extra/",
     "license": "MIT",
     "authors": [
         {
             "name": "Natan Felles",
-            "email": "natanfelles@gmail.com"
+            "email": "natanfelles@gmail.com",
+            "homepage": "https://natanfelles.github.io"
         }
     ],
     "require": {
         "php": ">=8.0",
-        "natanfelles/autoload": "^1.4",
-        "natanfelles/database": "^2.2"
+        "aplus/autoload": "^1.7",
+        "aplus/database": "^2.8"
     },
     "require-dev": {
         "ext-xdebug": "*",
-        "ergebnis/composer-normalize": "^2.13",
-        "natanfelles/coding-standard": "^1.5",
+        "aplus/coding-standard": "^1.10",
+        "ergebnis/composer-normalize": "^2.15",
         "phpmd/phpmd": "^2.10",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^9.5"
@@ -50,10 +51,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "support": {
-        "email": "natanfelles@gmail.com",
+        "email": "support@aplus-framework.com",
         "issues": "https://gitlab.com/aplus-framework/libraries/database-extra/issues",
         "wiki": "https://gitlab.com/aplus-framework/libraries/database-extra/wikis/home",
         "source": "https://gitlab.com/aplus-framework/libraries/database-extra",
-        "docs": "https://aplus-framework.gitlab.io/libraries/database-extra/docs/"
+        "docs": "https://docs.aplus-framework.com/guides/libraries/database-extra/"
     }
 }
