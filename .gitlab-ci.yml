@@ -1,5 +1,11 @@
 ---
-image: natanfelles/php-base
+image: registry.gitlab.com/aplus-framework/images/php
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  SAST_EXCLUDED_PATHS: guide, tests, vendor
 
 test:php:
   stage: test
@@ -39,7 +45,6 @@ pages:
     - mkdir public/
     - mv build/coverage/ public/
     - mv build/docs/ public/
-    - curl -sS https://aplus-framework.gitlab.io/redirect.php | php
   artifacts:
     paths:
       - public/
