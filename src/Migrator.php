@@ -189,7 +189,7 @@ class Migrator
      */
     public function migrateUp() : Generator
     {
-        yield from $this->migrateTo(\array_key_last($this->getFiles()));
+        yield from $this->migrateTo((string) \array_key_last($this->getFiles()));
     }
 
     /**
