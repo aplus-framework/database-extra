@@ -56,5 +56,11 @@
         "wiki": "https://gitlab.com/aplus-framework/libraries/database-extra/wikis/home",
         "source": "https://gitlab.com/aplus-framework/libraries/database-extra",
         "docs": "https://docs.aplus-framework.com/guides/libraries/database-extra/"
-    }
+    },
+    "funding": [
+        {
+            "type": "other",
+            "url": "https://aplus-framework.com/sponsor"
+        }
+    ]
 }
