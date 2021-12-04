@@ -11,7 +11,7 @@
         "seed",
         "seeder"
     ],
-    "homepage": "https://docs.aplus-framework.com/guides/libraries/database-extra/",
+    "homepage": "https://aplus-framework.com/packages/database-extra",
     "license": "MIT",
     "authors": [
         {
@@ -53,13 +53,13 @@
     "support": {
         "email": "support@aplus-framework.com",
         "issues": "https://gitlab.com/aplus-framework/libraries/database-extra/issues",
-        "wiki": "https://gitlab.com/aplus-framework/libraries/database-extra/wikis/home",
+        "forum": "https://aplus-framework.com/forum",
         "source": "https://gitlab.com/aplus-framework/libraries/database-extra",
         "docs": "https://docs.aplus-framework.com/guides/libraries/database-extra/"
     },
     "funding": [
         {
-            "type": "other",
+            "type": "Aplus Sponsor",
             "url": "https://aplus-framework.com/sponsor"
         }
     ]
