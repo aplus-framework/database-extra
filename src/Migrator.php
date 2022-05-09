@@ -138,7 +138,6 @@ class Migrator
      */
     public function getCurrentVersion() : string
     {
-        // @phpstan-ignore-next-line
         return $this->database->select()
             ->columns('version')
             ->from($this->getMigrationTable())

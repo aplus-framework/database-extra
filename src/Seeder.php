@@ -54,7 +54,7 @@ abstract class Seeder
         }
         $seeds = \is_array($seeds) ? $seeds : [$seeds];
         foreach ($seeds as $seed) {
-            $seed->run();
+            $seed->run(); // @phpstan-ignore-line
         }
     }
 }
