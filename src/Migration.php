@@ -20,14 +20,15 @@ abstract class Migration
 {
     protected Database $database;
 
-    /**
-     * Migration constructor.
-     *
-     * @param Database $database
-     */
-    public function __construct(Database $database)
+    public function setDatabase(Database $database) : static
     {
         $this->database = $database;
+        return $this;
+    }
+
+    public function getDatabase() : Database
+    {
+        return $this->database;
     }
 
     /**
