@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of Aplus Framework Database Extra Library.
  *
@@ -9,27 +9,29 @@
  */
 namespace Tests\Database\Extra;
 
-use Framework\Database\Extra\Migrator;
+use Framework\Database\Database;
+use Framework\Database\Extra\Migration;
 
 final class MigratorTest extends TestCase
 {
-    protected Migrator $migrator;
+    protected MigratorMock $migrator;
 
-    public function setup() : void
+    protected function setUp() : void
     {
-        $this->migrator = new Migrator(static::$database);
-        $this->migrator->addFiles([
-            __DIR__ . '/migrations/001-users.php',
-            __DIR__ . '/migrations/2-foo.php',
-            __DIR__ . '/migrations/003-bar.php',
-            __DIR__ . '/migrations/004-posts.php',
-        ]);
+        $this->migrator = new MigratorMock(
+            static::$database,
+            __DIR__ . '/migrations'
+        );
     }
 
     protected function tearDown() : void
     {
         static::$database->dropTable()
-            ->table($this->migrator->getMigrationTable())
+            ->table($this->migrator->getTable())
+            ->ifExists()
+            ->run();
+        static::$database->dropTable()
+            ->table('Comments')
             ->ifExists()
             ->run();
         static::$database->dropTable()
@@ -42,59 +44,102 @@ final class MigratorTest extends TestCase
             ->run();
     }
 
-    public function testCurrentVersion() : void
+    public function testDatabase() : void
     {
-        self::assertSame('', $this->migrator->getCurrentVersion());
+        self::assertInstanceOf(Database::class, $this->migrator->getDatabase());
+        $this->migrator->setDatabase(static::$database);
+        self::assertSame(static::$database, $this->migrator->getDatabase());
     }
 
-    protected function migrateTo(string $version) : void
+    public function testDirectory() : void
     {
-        foreach ($this->migrator->migrateTo($version) as $item) {
-        }
-    }
-
-    public function testMigrateTo() : void
-    {
-        self::assertSame('', $this->migrator->getCurrentVersion());
-        $this->migrateTo('001');
-        self::assertSame('001', $this->migrator->getCurrentVersion());
-        $this->migrateTo('004');
-        self::assertSame('004', $this->migrator->getCurrentVersion());
-        $this->migrateTo('004');
-        self::assertSame('004', $this->migrator->getCurrentVersion());
-        $this->migrateTo('001');
-        self::assertSame('001', $this->migrator->getCurrentVersion());
-        $this->migrateTo('');
-        self::assertSame('', $this->migrator->getCurrentVersion());
+        self::assertSame(__DIR__ . '/migrations/', $this->migrator->getDirectory());
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Migration version not found: 005');
-        $this->migrateTo('005');
+        $this->expectExceptionMessage(
+            'Directory path is invalid: /foo/bar'
+        );
+        $this->migrator->setDirectory('/foo/bar');
+    }
+
+    public function testTable() : void
+    {
+        self::assertSame('Migrations', $this->migrator->getTable());
+        $this->migrator->setTable('migraciones');
+        self::assertSame('migraciones', $this->migrator->getTable());
+    }
+
+    public function testLastMigrationName() : void
+    {
+        self::assertNull($this->migrator->getLastMigrationName());
+    }
+
+    public function testGetFiles() : void
+    {
+        self::assertSame([
+            __DIR__ . '/migrations/100_create_table_users.php',
+            __DIR__ . '/migrations/300_create_table_posts.php',
+            __DIR__ . '/migrations/1000_create_table_comments.php',
+            __DIR__ . '/migrations/1100_nothing.php',
+            __DIR__ . '/migrations/1200_alter_table_users.php',
+        ], $this->migrator->getFiles());
+    }
+
+    public function testGetMigrations() : void
+    {
+        $files = [
+            __DIR__ . '/migrations/1.txt',
+            __DIR__ . '/migrations/100_create_table_users.php',
+            __DIR__ . '/migrations/300_create_table_posts.php',
+            __DIR__ . '/migrations/1100_nothing.php',
+        ];
+        $result = [];
+        foreach ($this->migrator->getMigrations($files) as $file => $migration) {
+            $result[$file] = $migration;
+        }
+        self::assertArrayNotHasKey('1', $result);
+        self::assertArrayHasKey('100_create_table_users', $result);
+        self::assertInstanceOf(Migration::class, $result['100_create_table_users']);
+        self::assertArrayHasKey('300_create_table_posts', $result);
+        self::assertInstanceOf(Migration::class, $result['300_create_table_posts']);
+        self::assertArrayNotHasKey('1100_nothing', $result);
     }
 
     public function testMigrateUpAndDown() : void
     {
-        self::assertCount(0, $this->migrator->getVersions());
-        $versions = [];
-        foreach ($this->migrator->migrateUp() as $version) {
-            $versions[] = $version;
+        self::assertNull($this->migrator->getLastMigrationName());
+        $up = [];
+        foreach ($this->migrator->migrateUp() as $name) {
+            $up[] = $name;
         }
-        self::assertSame(['001', '004'], $versions);
-        self::assertSame('004', $this->migrator->getCurrentVersion());
-        self::assertCount(2, $this->migrator->getVersions());
-        $versions = [];
-        foreach ($this->migrator->migrateDown() as $version) {
-            $versions[] = $version;
+        self::assertSame([
+            '100_create_table_users',
+            '300_create_table_posts',
+            '1000_create_table_comments',
+            '1200_alter_table_users',
+        ], $up);
+        self::assertSame('1200_alter_table_users', $this->migrator->getLastMigrationName());
+        $up = [];
+        foreach ($this->migrator->migrateUp() as $name) {
+            $up[] = $name;
         }
-        self::assertSame(['004', '001'], $versions);
-        self::assertSame('', $this->migrator->getCurrentVersion());
-        self::assertCount(0, $this->migrator->getVersions());
-    }
-
-    public function testPrepare() : void
-    {
-        $migrator = new Migrator(static::$database);
-        $migrator->addFiles($this->migrator->getFiles());
-        $migrator->setMigrationTable($this->migrator->getMigrationTable());
-        self::assertCount(0, $this->migrator->getVersions());
+        self::assertEmpty($up);
+        self::assertSame('1200_alter_table_users', $this->migrator->getLastMigrationName());
+        $down = [];
+        foreach ($this->migrator->migrateDown() as $name) {
+            $down[] = $name;
+        }
+        self::assertSame([
+            '1200_alter_table_users',
+            '1000_create_table_comments',
+            '300_create_table_posts',
+            '100_create_table_users',
+        ], $down);
+        self::assertNull($this->migrator->getLastMigrationName());
+        $down = [];
+        foreach ($this->migrator->migrateDown() as $name) {
+            $down[] = $name;
+        }
+        self::assertEmpty($down);
+        self::assertNull($this->migrator->getLastMigrationName());
     }
 }

@@ -9,14 +9,11 @@
  */
 namespace Framework\Database\Extra;
 
-use Framework\Autoload\Autoloader;
-use Framework\Autoload\Locator;
 use Framework\Database\Database;
 use Framework\Database\Definition\Table\TableDefinition;
+use Framework\Helpers\Isolation;
 use Generator;
 use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * Class Migrator.
@@ -25,271 +22,177 @@ use ReflectionException;
  */
 class Migrator
 {
-    /**
-     * Migrations Table name.
-     */
-    protected string $migrationTable = 'Migrations';
-    /**
-     * Added files.
-     *
-     * @var array<string,string>
-     */
-    protected array $files = [];
     protected Database $database;
-    protected Locator $locator;
+    protected string $table;
+    protected string $directory;
 
-    /**
-     * Migrator constructor.
-     *
-     * @param Database $database
-     * @param Locator|null $locator
-     */
-    public function __construct(Database $database, Locator $locator = null)
+    public function __construct(
+        Database $database,
+        string $directory,
+        string $table = 'Migrations'
+    ) {
+        $this->setDatabase($database)
+            ->setDirectory($directory)
+            ->setTable($table)
+            ->prepare();
+    }
+
+    public function setDatabase(Database $database) : static
     {
         $this->database = $database;
-        $this->locator = $locator ?: new Locator(new Autoloader());
-        $this->prepare();
+        return $this;
     }
 
-    /**
-     * Add migrations files.
-     *
-     * @param string[] $filenames
-     *
-     * @return static
-     */
-    public function addFiles(array $filenames) : static
+    public function getDatabase() : Database
     {
-        foreach ($filenames as $filename) {
-            $this->files[$this->getFileVersion($filename)] = $filename;
+        return $this->database;
+    }
+
+    public function setDirectory(string $directory) : static
+    {
+        $realpath = \realpath($directory);
+        if ($realpath === false || ! \is_dir($realpath)) {
+            throw new InvalidArgumentException('Directory path is invalid: ' . $directory);
         }
-        \ksort($this->files);
+        $this->directory = $realpath . \DIRECTORY_SEPARATOR;
         return $this;
     }
 
-    /**
-     * Get Migration files.
-     *
-     * @return array<string,string>
-     */
-    public function getFiles() : array
+    public function getDirectory() : string
     {
-        return $this->files;
+        return $this->directory;
     }
 
-    /**
-     * @param string $table
-     *
-     * @return static
-     */
-    public function setMigrationTable(string $table) : static
+    public function setTable(string $table) : static
     {
-        $this->migrationTable = $table;
+        $this->table = $table;
         return $this;
     }
 
-    public function getMigrationTable() : string
+    public function getTable() : string
     {
-        return $this->migrationTable;
-    }
-
-    protected function getFileVersion(string $file) : string
-    {
-        return $this->getFileParts($file)[0];
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return array<int,string>
-     */
-    private function getFileParts(string $file) : array
-    {
-        $file = \substr($file, \strrpos($file, \DIRECTORY_SEPARATOR) + 1);
-        return \explode('-', $file, 2);
-    }
-
-    protected function getFileName(string $file) : string
-    {
-        return \substr($this->getFileParts($file)[1], 0, -4);
+        return $this->table;
     }
 
     protected function prepare() : void
     {
-        $exists = $this->database->query(
-            'SHOW TABLES LIKE ' . $this->database->quote($this->getMigrationTable())
+        $result = $this->getDatabase()->query(
+            'SHOW TABLES LIKE ' . $this->getDatabase()->quote($this->getTable())
         )->fetch();
-        if ($exists) {
+        if ($result) {
             return;
         }
-        $this->database->createTable()
-            ->table($this->getMigrationTable())
+        $this->getDatabase()->createTable()
+            ->table($this->getTable())
             ->definition(static function (TableDefinition $definition) : void {
-                $definition->column('version')->varchar(32)->primaryKey();
-                $definition->column('name')->varchar(255)->notNull();
-                $definition->column('migratedAt')->timestamp()->notNull();
+                $definition->column('id')->int()->autoIncrement()->primaryKey();
+                $definition->column('migration')->varchar(255)->uniqueKey();
+                $definition->column('timestamp')->timestamp()->notNull();
             })->run();
     }
 
     /**
      * Get current migrated version from Database.
      *
-     * @return string
+     * @return string|null
      */
-    public function getCurrentVersion() : string
+    public function getLastMigrationName() : ?string
     {
         return $this->database->select()
-            ->columns('version')
-            ->from($this->getMigrationTable())
-            ->orderByDesc(static function () : string {
-                return 'CAST(`version` AS SIGNED INTEGER)';
-            })
-            ->orderByAsc('name')
+            ->from($this->getTable())
+            ->orderByDesc('id')
             ->limit(1)
             ->run()
-            ->fetch()->version ?? '';
+            ->fetch()->migration ?? null;
     }
 
     /**
-     * Get Migrations list from Database.
-     *
-     * @return array<int,object>
+     * @return array<int,string>
      */
-    public function getVersions() : array
+    protected function getFiles() : array
     {
-        return $this->database->select()
-            ->from($this->getMigrationTable())
-            ->orderByAsc(static function () : string {
-                return 'CAST(`version` AS SIGNED INTEGER)';
-            })
-            ->orderByAsc('name')
-            ->run()
-            ->fetchAll();
+        $files = [];
+        foreach ((array) \glob($this->getDirectory() . '*.php') as $filename) {
+            if ($filename && \is_file($filename)) {
+                $files[] = $filename;
+            }
+        }
+        \natsort($files);
+        return \array_values($files);
     }
 
     /**
-     * Migrate down all Migration files.
+     * @return Generator<string,Migration>
+     */
+    protected function getMigrationsAsc() : Generator
+    {
+        yield from $this->getMigrations($this->getFiles());
+    }
+
+    /**
+     * @return Generator<string,Migration>
+     */
+    protected function getMigrationsDesc() : Generator
+    {
+        yield from $this->getMigrations(\array_reverse($this->getFiles()));
+    }
+
+    /**
+     * @param array<string> $files
      *
-     * @throws ReflectionException If migration class does not exist
-     *
-     * @return Generator<int,string>
+     * @return Generator<string,Migration>
+     */
+    protected function getMigrations(array $files) : Generator
+    {
+        foreach ($files as $file) {
+            $migration = Isolation::require($file);
+            if ($migration instanceof Migration) {
+                $migration->setDatabase($this->getDatabase());
+                $file = \basename($file, '.php');
+                yield $file => $migration;
+            }
+        }
+    }
+
+    /**
+     * @return Generator<string>
      */
     public function migrateDown() : Generator
     {
-        yield from $this->migrateTo('');
+        $last = $this->getLastMigrationName();
+        foreach ($this->getMigrationsDesc() as $name => $migration) {
+            $cmp = \strnatcmp($last ?? '', $name);
+            if ($cmp < 0) {
+                continue;
+            }
+            $migration->down();
+            $this->getDatabase()->delete()
+                ->from($this->getTable())
+                ->whereEqual('migration', $name)
+                ->run();
+            yield $name;
+        }
     }
 
     /**
-     * Migrate up all Migration files.
-     *
-     * @throws ReflectionException If migration class does not exist
-     *
-     * @return Generator<int,string>
+     * @return Generator<string>
      */
     public function migrateUp() : Generator
     {
-        yield from $this->migrateTo((string) \array_key_last($this->getFiles()));
-    }
-
-    /**
-     * Migrate to specific version.
-     *
-     * @param string $version
-     *
-     * @throws InvalidArgumentException If migration version is not found
-     * @throws ReflectionException If migration class does not exist
-     *
-     * @return Generator<int,string>
-     */
-    public function migrateTo(string $version) : Generator
-    {
-        $currentVersion = $this->getCurrentVersion();
-        if ($version === $currentVersion) {
-            return;
-        }
-        if ($version !== '' && ! isset($this->getFiles()[$version])) {
-            throw new InvalidArgumentException("Migration version not found: {$version}");
-        }
-        $direction = 'up';
-        if ($version < $currentVersion) {
-            $direction = 'down';
-            $this->database->delete()
-                ->from($this->getMigrationTable())
-                ->whereGreaterThan('version', $version)
-                ->run();
-        }
-        $files = $direction === 'up'
-            ? $this->getRangeUp($currentVersion, $version)
-            : $this->getRangeDown($currentVersion, $version);
-        yield from $this->migrate($files, $direction);
-    }
-
-    /**
-     * @param string $current
-     * @param string $target
-     *
-     * @return array<string,string>
-     */
-    protected function getRangeDown(string $current, string $target) : array
-    {
-        $files = [];
-        foreach ($this->getFiles() as $version => $file) {
-            if ($version <= $current && $version > $target) {
-                $files[$version] = $file;
-            }
-        }
-        \krsort($files);
-        return $files;
-    }
-
-    /**
-     * @param string $current
-     * @param string $target
-     *
-     * @return array<string,string>
-     */
-    protected function getRangeUp(string $current, string $target) : array
-    {
-        $files = [];
-        foreach ($this->getFiles() as $version => $file) {
-            if ($version > $current && $version <= $target) {
-                $files[$version] = $file;
-            }
-        }
-        return $files;
-    }
-
-    /**
-     * @param array<string,string> $files
-     * @param string $direction
-     *
-     * @throws ReflectionException If migration class does not exist
-     *
-     * @return Generator<int,string>
-     */
-    protected function migrate(array $files, string $direction) : Generator
-    {
-        foreach ($files as $version => $file) {
-            $className = $this->locator->getClassName($file);
-            if ($className === null) {
+        $last = $this->getLastMigrationName();
+        foreach ($this->getMigrationsAsc() as $name => $migration) {
+            $cmp = \strnatcmp($last ?? '', $name);
+            if ($cmp >= 0) {
                 continue;
             }
-            require_once $file;
-            $class = new ReflectionClass($className); // @phpstan-ignore-line
-            if ( ! $class->isInstantiable() || ! $class->isSubclassOf(Migration::class)) {
-                continue;
-            }
-            (new $className($this->database))->{$direction}();
-            if ($direction === 'up') {
-                $this->database->insert()
-                    ->into($this->getMigrationTable())
-                    ->set([
-                        'version' => $version,
-                        'name' => $this->getFileName($file),
-                        'migratedAt' => \gmdate('Y-m-d H:i:s'),
-                    ])->run();
-            }
-            yield $version;
+            $migration->up();
+            $this->getDatabase()->insert()
+                ->into($this->getTable())
+                ->set([
+                    'migration' => $name,
+                    'timestamp' => \gmdate('Y-m-d H:i:s'),
+                ])->run();
+            yield $name;
         }
     }
 }

@@ -10,20 +10,21 @@
 use Framework\Database\Definition\Table\TableDefinition;
 use Framework\Database\Extra\Migration;
 
-class UsersMigration extends Migration
-{
+return new class() extends Migration {
+    protected string $table = 'Users';
+
     public function up() : void
     {
-        $this->database->createTable()
-            ->table('Users')
+        $this->getDatabase()->createTable($this->table)
             ->definition(static function (TableDefinition $definition) : void {
-                $definition->column('id')->int()->primaryKey();
+                $definition->column('id')->int()->primaryKey()->autoIncrement();
                 $definition->column('name')->varchar(32);
+                $definition->column('birthday')->date();
             })->run();
     }
 
     public function down() : void
     {
-        $this->database->dropTable()->table('Users')->ifExists()->run();
+        $this->getDatabase()->dropTable($this->table)->ifExists()->run();
     }
-}
+};

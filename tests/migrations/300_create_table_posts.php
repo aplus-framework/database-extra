@@ -10,20 +10,22 @@
 use Framework\Database\Definition\Table\TableDefinition;
 use Framework\Database\Extra\Migration;
 
-class PostsMigration extends Migration
-{
+return new class() extends Migration {
+    protected string $table = 'Posts';
+
     public function up() : void
     {
-        $this->database->createTable()
-            ->table('Posts')
+        $this->getDatabase()->createTable($this->table)
             ->definition(static function (TableDefinition $definition) : void {
-                $definition->column('id')->int()->primaryKey();
-                $definition->column('title')->varchar(255);
+                $definition->column('id')->int()->primaryKey()->autoIncrement();
+                $definition->column('title')->varchar(128);
+                $definition->column('contents')->text();
+                $definition->column('createAt')->timestamp();
             })->run();
     }
 
     public function down() : void
     {
-        $this->database->dropTable()->table('Posts')->ifExists()->run();
+        $this->getDatabase()->dropTable($this->table)->ifExists()->run();
     }
-}
+};
