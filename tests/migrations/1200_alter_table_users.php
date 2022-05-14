@@ -25,8 +25,8 @@ return new class() extends Migration {
     public function down() : void
     {
         $this->getDatabase()->alterTable($this->table)
-            ->dropColumn('email')
-            ->dropColumn('password')
+            ->dropColumn('email', true)
+            ->dropColumn('password', true)
             ->run();
     }
 };

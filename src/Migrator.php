@@ -166,10 +166,7 @@ class Migrator
                 continue;
             }
             $migration->down();
-            $this->getDatabase()->delete()
-                ->from($this->getTable())
-                ->whereEqual('migration', $name)
-                ->run();
+            $this->deleteRow($name);
             yield $name;
         }
     }
@@ -186,13 +183,65 @@ class Migrator
                 continue;
             }
             $migration->up();
-            $this->getDatabase()->insert()
-                ->into($this->getTable())
-                ->set([
-                    'migration' => $name,
-                    'timestamp' => \gmdate('Y-m-d H:i:s'),
-                ])->run();
+            $this->insertRow($name);
             yield $name;
+        }
+    }
+
+    protected function insertRow(string $name) : int | string
+    {
+        return $this->getDatabase()->insert()
+            ->into($this->getTable())
+            ->set([
+                'migration' => $name,
+                'timestamp' => \gmdate('Y-m-d H:i:s'),
+            ])->run();
+    }
+
+    protected function deleteRow(string $name) : int | string
+    {
+        return $this->getDatabase()->delete()
+            ->from($this->getTable())
+            ->whereEqual('migration', $name)
+            ->run();
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Generator<string>
+     */
+    public function migrateTo(string $name) : Generator
+    {
+        $last = $this->getLastMigrationName() ?? '';
+        $cmp = \strnatcmp($last, $name);
+        if ($cmp === 0) {
+            return;
+        }
+        if ($cmp < 0) {
+            foreach ($this->getMigrationsAsc() as $n => $migration) {
+                if (\strnatcmp($n, $name) > 0) {
+                    continue;
+                }
+                if (\strnatcmp($last, $n) >= 0) {
+                    continue;
+                }
+                $migration->up();
+                $this->insertRow($n);
+                yield $n;
+            }
+            return;
+        }
+        foreach ($this->getMigrationsDesc() as $n => $migration) {
+            if (\strnatcmp($name, $n) > 0) {
+                continue;
+            }
+            if (\strnatcmp($last, $n) < 0) {
+                continue;
+            }
+            $migration->down();
+            $this->deleteRow($n);
+            yield $n;
         }
     }
 }

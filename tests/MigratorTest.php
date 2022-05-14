@@ -142,4 +142,102 @@ final class MigratorTest extends TestCase
         self::assertEmpty($down);
         self::assertNull($this->migrator->getLastMigrationName());
     }
+
+    public function testMigrateTo() : void
+    {
+        self::assertNull($this->migrator->getLastMigrationName());
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([], $migrated);
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1000') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '100_create_table_users',
+            '300_create_table_posts',
+        ], $migrated);
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1000') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([], $migrated);
+        self::assertSame(
+            '300_create_table_posts',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1200') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1000_create_table_comments',
+        ], $migrated);
+        self::assertSame(
+            '1000_create_table_comments',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1201') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1200_alter_table_users',
+        ], $migrated);
+        self::assertSame(
+            '1200_alter_table_users',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1201') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([], $migrated);
+        self::assertSame(
+            '1200_alter_table_users',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('500') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1200_alter_table_users',
+            '1000_create_table_comments',
+        ], $migrated);
+        self::assertSame(
+            '300_create_table_posts',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('1100') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1000_create_table_comments',
+        ], $migrated);
+        self::assertSame(
+            '1000_create_table_comments',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('100') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1000_create_table_comments',
+            '300_create_table_posts',
+            '100_create_table_users',
+        ], $migrated);
+        self::assertNull(
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateTo('100') as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([], $migrated);
+    }
 }
