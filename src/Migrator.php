@@ -159,9 +159,9 @@ class Migrator
      */
     public function migrateDown() : Generator
     {
-        $last = $this->getLastMigrationName();
+        $last = $this->getLastMigrationName() ?? '';
         foreach ($this->getMigrationsDesc() as $name => $migration) {
-            $cmp = \strnatcmp($last ?? '', $name);
+            $cmp = \strnatcmp($last, $name);
             if ($cmp < 0) {
                 continue;
             }
@@ -176,9 +176,9 @@ class Migrator
      */
     public function migrateUp() : Generator
     {
-        $last = $this->getLastMigrationName();
+        $last = $this->getLastMigrationName() ?? '';
         foreach ($this->getMigrationsAsc() as $name => $migration) {
-            $cmp = \strnatcmp($last ?? '', $name);
+            $cmp = \strnatcmp($last, $name);
             if ($cmp >= 0) {
                 continue;
             }
