@@ -35,7 +35,6 @@
     ],
     "require": {
         "php": ">=8.1",
-        "aplus/autoload": "^2.0",
         "aplus/database": "^3.0",
         "aplus/helpers": "^3.0"
     },
