@@ -155,10 +155,13 @@ class Migrator
     }
 
     /**
+     * @param int|null $quantity
+     *
      * @return Generator<string>
      */
-    public function migrateDown() : Generator
+    public function migrateDown(int $quantity = null) : Generator
     {
+        $count = 0;
         $last = $this->getLastMigrationName() ?? '';
         foreach ($this->getMigrationsDesc() as $name => $migration) {
             $cmp = \strnatcmp($last, $name);
@@ -168,14 +171,21 @@ class Migrator
             $migration->down();
             $this->deleteRow($name);
             yield $name;
+            $count++;
+            if ($count === $quantity) {
+                break;
+            }
         }
     }
 
     /**
+     * @param int|null $quantity
+     *
      * @return Generator<string>
      */
-    public function migrateUp() : Generator
+    public function migrateUp(int $quantity = null) : Generator
     {
+        $count = 0;
         $last = $this->getLastMigrationName() ?? '';
         foreach ($this->getMigrationsAsc() as $name => $migration) {
             $cmp = \strnatcmp($last, $name);
@@ -185,6 +195,10 @@ class Migrator
             $migration->up();
             $this->insertRow($name);
             yield $name;
+            $count++;
+            if ($count === $quantity) {
+                break;
+            }
         }
     }
 

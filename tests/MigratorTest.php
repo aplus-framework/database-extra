@@ -143,6 +143,62 @@ final class MigratorTest extends TestCase
         self::assertNull($this->migrator->getLastMigrationName());
     }
 
+    public function testMigrateUpAndDownWithQuantity() : void
+    {
+        self::assertNull($this->migrator->getLastMigrationName());
+        $migrated = [];
+        foreach ($this->migrator->migrateDown(2) as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([], $migrated);
+        self::assertNull($this->migrator->getLastMigrationName());
+        $migrated = [];
+        foreach ($this->migrator->migrateUp(2) as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '100_create_table_users',
+            '300_create_table_posts',
+        ], $migrated);
+        self::assertSame(
+            '300_create_table_posts',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateUp(2) as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1000_create_table_comments',
+            '1200_alter_table_users',
+        ], $migrated);
+        self::assertSame(
+            '1200_alter_table_users',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateDown(2) as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '1200_alter_table_users',
+            '1000_create_table_comments',
+        ], $migrated);
+        self::assertSame(
+            '300_create_table_posts',
+            $this->migrator->getLastMigrationName()
+        );
+        $migrated = [];
+        foreach ($this->migrator->migrateDown(3) as $name) {
+            $migrated[] = $name;
+        }
+        self::assertSame([
+            '300_create_table_posts',
+            '100_create_table_users',
+        ], $migrated);
+        self::assertNull($this->migrator->getLastMigrationName());
+    }
+
     public function testMigrateTo() : void
     {
         self::assertNull($this->migrator->getLastMigrationName());
