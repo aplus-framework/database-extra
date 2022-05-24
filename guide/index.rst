@@ -1,6 +1,9 @@
 Database Extra
 ==============
 
+.. image:: image.png
+   :alt: Aplus Framework Database Extra Library
+
 Aplus Framework Database Extra Library.
 
 - `Installation`_
