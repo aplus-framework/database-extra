@@ -17,10 +17,10 @@ class T1 extends Seeder
     {
         echo __CLASS__ . \PHP_EOL;
         $this->call(T2::class);
-        $this->call(new T2($this->database));
+        $this->call(new T2($this->getDatabase()));
         $this->call([
             T2::class,
-            new T2($this->database),
+            new T2($this->getDatabase()),
         ]);
     }
 }

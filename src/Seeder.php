@@ -30,6 +30,11 @@ abstract class Seeder
         $this->database = $database;
     }
 
+    public function getDatabase() : Database
+    {
+        return $this->database;
+    }
+
     /**
      * Run the Seeder.
      */
@@ -43,11 +48,11 @@ abstract class Seeder
     protected function call(array | Seeder | string $seeds) : void
     {
         if (\is_string($seeds)) {
-            $seeds = [new $seeds($this->database)];
+            $seeds = [new $seeds($this->getDatabase())];
         } elseif (\is_array($seeds)) {
             foreach ($seeds as &$seed) {
                 if (\is_string($seed)) {
-                    $seed = new $seed($this->database);
+                    $seed = new $seed($this->getDatabase());
                 }
             }
             unset($seed);
