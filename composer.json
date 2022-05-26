@@ -35,6 +35,7 @@
     ],
     "require": {
         "php": ">=8.1",
+        "aplus/cli": "^2.3",
         "aplus/database": "^3.0",
         "aplus/helpers": "^3.0"
     },
@@ -45,6 +46,9 @@
         "phpmd/phpmd": "^2.12",
         "phpstan/phpstan": "^1.6",
         "phpunit/phpunit": "^9.5"
+    },
+    "suggest": {
+        "fakerphp/faker": "Generates fake data for seeding"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
