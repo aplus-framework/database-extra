@@ -24,15 +24,25 @@ class Migrator
 {
     protected Database $database;
     protected string $table;
-    protected string $directory;
+    /**
+     * @var array<int,string>
+     */
+    protected array $directories;
 
+    /**
+     * @param Database $database
+     * @param array<string> $directories
+     * @param string $table
+     */
     public function __construct(
         Database $database,
-        string $directory,
+        array $directories,
         string $table = 'Migrations'
     ) {
+        foreach ($directories as $directory) {
+            $this->addDirectory($directory);
+        }
         $this->setDatabase($database)
-            ->setDirectory($directory)
             ->setTable($table)
             ->prepare();
     }
@@ -48,19 +58,22 @@ class Migrator
         return $this->database;
     }
 
-    public function setDirectory(string $directory) : static
+    public function addDirectory(string $directory) : static
     {
         $realpath = \realpath($directory);
         if ($realpath === false || ! \is_dir($realpath)) {
             throw new InvalidArgumentException('Directory path is invalid: ' . $directory);
         }
-        $this->directory = $realpath . \DIRECTORY_SEPARATOR;
+        $this->directories[] = $realpath . \DIRECTORY_SEPARATOR;
         return $this;
     }
 
-    public function getDirectory() : string
+    /**
+     * @return array<int,string>
+     */
+    public function getDirectories() : array
     {
-        return $this->directory;
+        return $this->directories;
     }
 
     public function setTable(string $table) : static
@@ -112,13 +125,24 @@ class Migrator
     protected function getFiles() : array
     {
         $files = [];
-        foreach ((array) \glob($this->getDirectory() . '*.php') as $filename) {
-            if ($filename && \is_file($filename)) {
-                $files[] = $filename;
+        foreach ($this->getDirectories() as $directory) {
+            foreach ((array) \glob($directory . '*.php') as $filename) {
+                if ($filename && \is_file($filename)) {
+                    $files[] = [
+                        'basename' => \basename($filename, '.php'),
+                        'filename' => $filename,
+                    ];
+                }
             }
         }
-        \natsort($files);
-        return \array_values($files);
+        \usort($files, static function ($file1, $file2) {
+            return \strnatcmp($file1['basename'], $file2['basename']);
+        });
+        $result = [];
+        foreach ($files as $file) {
+            $result[] = $file['filename'];
+        }
+        return $result;
     }
 
     /**

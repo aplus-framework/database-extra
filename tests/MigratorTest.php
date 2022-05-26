@@ -20,7 +20,10 @@ final class MigratorTest extends TestCase
     {
         $this->migrator = new MigratorMock(
             static::$database,
-            __DIR__ . '/migrations'
+            [
+                __DIR__ . '/migrations',
+                __DIR__ . '/migrations-2',
+            ]
         );
     }
 
@@ -39,6 +42,10 @@ final class MigratorTest extends TestCase
             ->ifExists()
             ->run();
         static::$database->dropTable()
+            ->table('Blogs')
+            ->ifExists()
+            ->run();
+        static::$database->dropTable()
             ->table('Users')
             ->ifExists()
             ->run();
@@ -51,14 +58,20 @@ final class MigratorTest extends TestCase
         self::assertSame(static::$database, $this->migrator->getDatabase());
     }
 
-    public function testDirectory() : void
+    public function testDirectories() : void
     {
-        self::assertSame(__DIR__ . '/migrations/', $this->migrator->getDirectory());
+        self::assertSame(
+            [
+                __DIR__ . '/migrations/',
+                __DIR__ . '/migrations-2/',
+            ],
+            $this->migrator->getDirectories()
+        );
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Directory path is invalid: /foo/bar'
         );
-        $this->migrator->setDirectory('/foo/bar');
+        $this->migrator->addDirectory('/foo/bar');
     }
 
     public function testTable() : void
@@ -77,6 +90,7 @@ final class MigratorTest extends TestCase
     {
         self::assertSame([
             __DIR__ . '/migrations/100_create_table_users.php',
+            __DIR__ . '/migrations-2/200_create_table_blogs.php',
             __DIR__ . '/migrations/300_create_table_posts.php',
             __DIR__ . '/migrations/1000_create_table_comments.php',
             __DIR__ . '/migrations/1100_nothing.php',
@@ -113,6 +127,7 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '100_create_table_users',
+            '200_create_table_blogs',
             '300_create_table_posts',
             '1000_create_table_comments',
             '1200_alter_table_users',
@@ -132,6 +147,7 @@ final class MigratorTest extends TestCase
             '1200_alter_table_users',
             '1000_create_table_comments',
             '300_create_table_posts',
+            '200_create_table_blogs',
             '100_create_table_users',
         ], $down);
         self::assertNull($this->migrator->getLastMigrationName());
@@ -158,17 +174,18 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '100_create_table_users',
-            '300_create_table_posts',
+            '200_create_table_blogs',
         ], $migrated);
         self::assertSame(
-            '300_create_table_posts',
+            '200_create_table_blogs',
             $this->migrator->getLastMigrationName()
         );
         $migrated = [];
-        foreach ($this->migrator->migrateUp(2) as $name) {
+        foreach ($this->migrator->migrateUp(3) as $name) {
             $migrated[] = $name;
         }
         self::assertSame([
+            '300_create_table_posts',
             '1000_create_table_comments',
             '1200_alter_table_users',
         ], $migrated);
@@ -194,6 +211,7 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '300_create_table_posts',
+            '200_create_table_blogs',
             '100_create_table_users',
         ], $migrated);
         self::assertNull($this->migrator->getLastMigrationName());
@@ -213,6 +231,7 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '100_create_table_users',
+            '200_create_table_blogs',
             '300_create_table_posts',
         ], $migrated);
         $migrated = [];
@@ -285,6 +304,7 @@ final class MigratorTest extends TestCase
         self::assertSame([
             '1000_create_table_comments',
             '300_create_table_posts',
+            '200_create_table_blogs',
             '100_create_table_users',
         ], $migrated);
         self::assertNull(
