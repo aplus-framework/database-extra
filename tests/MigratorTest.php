@@ -95,6 +95,7 @@ final class MigratorTest extends TestCase
             __DIR__ . '/migrations/1000_create_table_comments.php',
             __DIR__ . '/migrations/1100_nothing.php',
             __DIR__ . '/migrations/1200_alter_table_users.php',
+            __DIR__ . '/migrations-2/1200_alter_table_users.php',
         ], $this->migrator->getFiles());
     }
 
@@ -131,6 +132,7 @@ final class MigratorTest extends TestCase
             '300_create_table_posts',
             '1000_create_table_comments',
             '1200_alter_table_users',
+            '1200_alter_table_users',
         ], $up);
         self::assertSame('1200_alter_table_users', $this->migrator->getLastMigrationName());
         $up = [];
@@ -144,6 +146,7 @@ final class MigratorTest extends TestCase
             $down[] = $name;
         }
         self::assertSame([
+            '1200_alter_table_users',
             '1200_alter_table_users',
             '1000_create_table_comments',
             '300_create_table_posts',
@@ -199,17 +202,18 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '1200_alter_table_users',
-            '1000_create_table_comments',
+            '1200_alter_table_users',
         ], $migrated);
         self::assertSame(
-            '300_create_table_posts',
+            '1000_create_table_comments',
             $this->migrator->getLastMigrationName()
         );
         $migrated = [];
-        foreach ($this->migrator->migrateDown(3) as $name) {
+        foreach ($this->migrator->migrateDown(4) as $name) {
             $migrated[] = $name;
         }
         self::assertSame([
+            '1000_create_table_comments',
             '300_create_table_posts',
             '200_create_table_blogs',
             '100_create_table_users',
@@ -260,6 +264,7 @@ final class MigratorTest extends TestCase
         }
         self::assertSame([
             '1200_alter_table_users',
+            '1200_alter_table_users',
         ], $migrated);
         self::assertSame(
             '1200_alter_table_users',
@@ -279,6 +284,7 @@ final class MigratorTest extends TestCase
             $migrated[] = $name;
         }
         self::assertSame([
+            '1200_alter_table_users',
             '1200_alter_table_users',
             '1000_create_table_comments',
         ], $migrated);

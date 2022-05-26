@@ -99,8 +99,9 @@ class Migrator
             ->table($this->getTable())
             ->definition(static function (TableDefinition $definition) : void {
                 $definition->column('id')->int()->autoIncrement()->primaryKey();
-                $definition->column('migration')->varchar(255)->uniqueKey();
+                $definition->column('migration')->varchar(255);
                 $definition->column('timestamp')->timestamp()->notNull();
+                $definition->index()->key('migration');
             })->run();
     }
 
@@ -241,6 +242,8 @@ class Migrator
         return $this->getDatabase()->delete()
             ->from($this->getTable())
             ->whereEqual('migration', $name)
+            ->orderByDesc('id')
+            ->limit(1)
             ->run();
     }
 
