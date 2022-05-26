@@ -9,6 +9,7 @@
  */
 namespace Framework\Database\Extra;
 
+use Framework\CLI\CLI;
 use Framework\Database\Database;
 
 /**
@@ -19,6 +20,7 @@ use Framework\Database\Database;
 abstract class Seeder
 {
     protected Database $database;
+    protected bool $silent;
 
     /**
      * Seeder constructor.
@@ -33,6 +35,17 @@ abstract class Seeder
     public function getDatabase() : Database
     {
         return $this->database;
+    }
+
+    public function setSilent(bool $isSilent = true) : static
+    {
+        $this->silent = $isSilent;
+        return $this;
+    }
+
+    public function isSilent() : bool
+    {
+        return $this->silent ?? false;
     }
 
     /**
