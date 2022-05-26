@@ -72,7 +72,34 @@ abstract class Seeder
         }
         $seeds = \is_array($seeds) ? $seeds : [$seeds];
         foreach ($seeds as $seed) {
-            $seed->run(); // @phpstan-ignore-line
+            $this->runSeed($seed); // @phpstan-ignore-line
         }
+    }
+
+    protected function runSeed(Seeder $seed) : void
+    {
+        ! $this->isCli() || $this->isSilent()
+            ? $seed->run()
+            : $seed->runCli($seed);
+    }
+
+    protected function runCli(Seeder $seed) : void
+    {
+        $class = CLI::style($seed::class, CLI::FG_GREEN);
+        CLI::liveLine('- Seeding ' . $class . '...');
+        $runtime = \microtime(true);
+        $seed->run();
+        $runtime = \microtime(true) - $runtime;
+        $runtime = \round($runtime, 6);
+        $runtime = CLI::style((string) $runtime, CLI::FG_YELLOW);
+        CLI::liveLine(
+            '- Seeded ' . $class . ' in ' . $runtime . ' seconds.',
+            true
+        );
+    }
+
+    protected function isCli() : bool
+    {
+        return \PHP_SAPI === 'cli' || \defined('STDIN');
     }
 }
