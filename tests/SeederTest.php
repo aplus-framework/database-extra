@@ -9,26 +9,47 @@
  */
 namespace Tests\Database\Extra;
 
-use Tests\Database\Extra\Seeds\T1;
-use Tests\Database\Extra\Seeds\T2;
+use Framework\CLI\Streams\Stdout;
+use Tests\Database\Extra\Seeds\DatabaseSeeder;
+use Tests\Database\Extra\Seeds\PostsSeeder;
+use Tests\Database\Extra\Seeds\UsersSeeder;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 final class SeederTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess
-     */
-    public function testRunCall() : void
+    public function testCall() : void
     {
-        \ob_start();
-        (new T1(static::$database))->run();
-        $buffer = \ob_get_clean();
-        self::assertSame(
-            T1::class . \PHP_EOL
-            . T2::class . \PHP_EOL
-            . T2::class . \PHP_EOL
-            . T2::class . \PHP_EOL
-            . T2::class . \PHP_EOL,
-            $buffer
-        );
+        $seeder = new DatabaseSeeder(self::$database);
+        Stdout::init();
+        $seeder->call(UsersSeeder::class);
+        $seeder->call([
+            UsersSeeder::class,
+            new PostsSeeder(self::$database),
+        ]);
+        $contents = Stdout::getContents();
+        self::assertStringContainsString(UsersSeeder::class, $contents);
+        self::assertStringContainsString(PostsSeeder::class, $contents);
+    }
+
+    public function testRunCli() : void
+    {
+        $seeder = new DatabaseSeeder(self::$database);
+        Stdout::init();
+        $seeder->run();
+        $contents = Stdout::getContents();
+        self::assertStringContainsString(UsersSeeder::class, $contents);
+        self::assertStringContainsString(PostsSeeder::class, $contents);
+    }
+
+    public function testRunSilent() : void
+    {
+        $seeder = new DatabaseSeeder(self::$database);
+        Stdout::init();
+        $seeder->setSilent();
+        $seeder->run();
+        $contents = Stdout::getContents();
+        self::assertSame('', $contents);
     }
 }

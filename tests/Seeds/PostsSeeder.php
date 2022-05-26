@@ -11,16 +11,9 @@ namespace Tests\Database\Extra\Seeds;
 
 use Framework\Database\Extra\Seeder;
 
-class T1 extends Seeder
+class PostsSeeder extends Seeder
 {
     public function run() : void
     {
-        echo __CLASS__ . \PHP_EOL;
-        $this->call(T2::class);
-        $this->call(new T2($this->getDatabase()));
-        $this->call([
-            T2::class,
-            new T2($this->getDatabase()),
-        ]);
     }
 }
