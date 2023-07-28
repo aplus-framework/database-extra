@@ -22,9 +22,9 @@
     "homepage": "https://aplus-framework.com/packages/database-extra",
     "support": {
         "email": "support@aplus-framework.com",
-        "issues": "https://gitlab.com/aplus-framework/libraries/database-extra/issues",
+        "issues": "https://github.com/aplus-framework/database-extra/issues",
         "forum": "https://aplus-framework.com/forum",
-        "source": "https://gitlab.com/aplus-framework/libraries/database-extra",
+        "source": "https://github.com/aplus-framework/database-extra",
         "docs": "https://docs.aplus-framework.com/guides/libraries/database-extra/"
     },
     "funding": [
