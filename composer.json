@@ -45,7 +45,7 @@
         "ergebnis/composer-normalize": "^2.26",
         "phpmd/phpmd": "^2.13",
         "phpstan/phpstan": "^1.6",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^10.5"
     },
     "suggest": {
         "fakerphp/faker": "Generates fake data for seeding"
