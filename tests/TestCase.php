@@ -23,7 +23,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setDatabase() : Database
     {
-        if ( ! isset(static::$database)) {
+        if (!isset(static::$database)) {
             static::$database = new Database([
                 'username' => \getenv('DB_USERNAME'),
                 'password' => \getenv('DB_PASSWORD'),

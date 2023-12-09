@@ -61,7 +61,7 @@ class Migrator
     public function addDirectory(string $directory) : static
     {
         $realpath = \realpath($directory);
-        if ($realpath === false || ! \is_dir($realpath)) {
+        if ($realpath === false || !\is_dir($realpath)) {
             throw new InvalidArgumentException('Directory path is invalid: ' . $directory);
         }
         $this->directories[] = $realpath . \DIRECTORY_SEPARATOR;

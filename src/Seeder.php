@@ -78,7 +78,7 @@ abstract class Seeder
 
     protected function runSeed(Seeder $seed) : void
     {
-        ! $this->isCli() || $this->isSilent()
+        !$this->isCli() || $this->isSilent()
             ? $seed->run()
             : $seed->runCli($seed);
     }
