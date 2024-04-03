@@ -71,7 +71,7 @@ jobs:
           composer global require php-coveralls/php-coveralls
           php-coveralls --coverage_clover=build/logs/clover.xml -v
 
-  mariadb-last:
+  mariadb-latest:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
 
