@@ -85,13 +85,13 @@ abstract class Seeder
 
     protected function runCli(Seeder $seed) : void
     {
-        $class = CLI::style($seed::class, CLI::FG_GREEN);
+        $class = CLI::style($seed::class, 'green');
         CLI::liveLine('- Seeding ' . $class . '...');
         $runtime = \microtime(true);
         $seed->run();
         $runtime = \microtime(true) - $runtime;
         $runtime = \round($runtime, 6);
-        $runtime = CLI::style((string) $runtime, CLI::FG_YELLOW);
+        $runtime = CLI::style((string) $runtime, 'yellow');
         CLI::liveLine(
             '- Seeded ' . $class . ' in ' . $runtime . ' seconds.',
             true
