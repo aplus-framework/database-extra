@@ -27,7 +27,7 @@ class Migrator
     /**
      * @var array<int,string>
      */
-    protected array $directories;
+    protected array $directories = [];
 
     /**
      * @param Database $database
