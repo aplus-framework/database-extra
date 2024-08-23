@@ -56,9 +56,9 @@ abstract class Seeder
     /**
      * Call seeders to run.
      *
-     * @param array<int,Seeder|string>|Seeder|string $seeds
+     * @param Seeder|array<int,Seeder|string>|string $seeds
      */
-    protected function call(array | Seeder | string $seeds) : void
+    protected function call(Seeder | array | string $seeds) : void
     {
         if (\is_string($seeds)) {
             $seeds = [new $seeds($this->getDatabase())];

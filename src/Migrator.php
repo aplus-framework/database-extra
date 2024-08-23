@@ -184,7 +184,7 @@ class Migrator
      *
      * @return Generator<string>
      */
-    public function migrateDown(int $quantity = null) : Generator
+    public function migrateDown(?int $quantity = null) : Generator
     {
         $count = 0;
         $last = $this->getLastMigrationName() ?? '';
@@ -208,7 +208,7 @@ class Migrator
      *
      * @return Generator<string>
      */
-    public function migrateUp(int $quantity = null) : Generator
+    public function migrateUp(?int $quantity = null) : Generator
     {
         $count = 0;
         $last = $this->getLastMigrationName() ?? '';
