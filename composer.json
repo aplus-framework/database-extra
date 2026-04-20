@@ -34,7 +34,7 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.5",
         "aplus/cli": "^3.0",
         "aplus/database": "^4.0",
         "aplus/helpers": "^4.0"
