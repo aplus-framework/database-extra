@@ -10,7 +10,8 @@
 use Framework\Database\Definition\Table\TableDefinition;
 use Framework\Database\Extra\Migration;
 
-return new class() extends Migration {
+return new class() extends Migration
+{
     protected string $table = 'Blogs';
 
     public function up() : void
