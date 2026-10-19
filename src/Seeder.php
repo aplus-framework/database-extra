@@ -7,10 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Framework\Database\Extra;
+namespace Aplus\Database\Extra;
 
-use Framework\CLI\CLI;
-use Framework\Database\Database;
+use Aplus\Cli\Cli;
+use Aplus\Database\Database;
 
 /**
  * Class Seeder.
@@ -85,14 +85,14 @@ abstract class Seeder
 
     protected function runCli(Seeder $seed) : void
     {
-        $class = CLI::style($seed::class, 'green');
-        CLI::liveLine('- Seeding ' . $class . '...');
+        $class = Cli::style($seed::class, 'green');
+        Cli::liveLine('- Seeding ' . $class . '...');
         $runtime = \microtime(true);
         $seed->run();
         $runtime = \microtime(true) - $runtime;
         $runtime = \round($runtime, 6);
-        $runtime = CLI::style((string) $runtime, 'yellow');
-        CLI::liveLine(
+        $runtime = Cli::style((string) $runtime, 'yellow');
+        Cli::liveLine(
             '- Seeded ' . $class . ' in ' . $runtime . ' seconds.',
             true
         );

@@ -9,7 +9,7 @@
  */
 namespace Tests\Database\Extra;
 
-use Framework\CLI\Streams\Stdout;
+use Aplus\Cli\Streams\Stdout;
 use Tests\Database\Extra\Seeds\DatabaseSeeder;
 use Tests\Database\Extra\Seeds\PostsSeeder;
 use Tests\Database\Extra\Seeds\UsersSeeder;

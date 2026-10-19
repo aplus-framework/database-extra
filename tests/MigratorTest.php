@@ -9,8 +9,8 @@
  */
 namespace Tests\Database\Extra;
 
-use Framework\Database\Database;
-use Framework\Database\Extra\Migration;
+use Aplus\Database\Database;
+use Aplus\Database\Extra\Migration;
 
 final class MigratorTest extends TestCase
 {

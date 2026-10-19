@@ -9,7 +9,7 @@
  */
 namespace Tests\Database\Extra;
 
-use Framework\Database\Extra\Migrator;
+use Aplus\Database\Extra\Migrator;
 use Generator;
 
 class MigratorMock extends Migrator

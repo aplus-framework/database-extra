@@ -9,7 +9,7 @@
  */
 namespace Tests\Database\Extra\Seeds;
 
-use Framework\Database\Extra\Seeder;
+use Aplus\Database\Extra\Seeder;
 
 class DatabaseSeeder extends Seeder
 {

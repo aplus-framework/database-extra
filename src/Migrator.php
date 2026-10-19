@@ -7,11 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Framework\Database\Extra;
+namespace Aplus\Database\Extra;
 
-use Framework\Database\Database;
-use Framework\Database\Definition\Table\TableDefinition;
-use Framework\Helpers\Isolation;
+use Aplus\Database\Database;
+use Aplus\Database\Definition\Table\TableDefinition;
+use Aplus\Helpers\Isolation;
 use Generator;
 use InvalidArgumentException;
 
