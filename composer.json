@@ -37,7 +37,7 @@
         "php": ">=8.5",
         "aplus/cli": "^4.0",
         "aplus/database": "^5.0",
-        "aplus/helpers": "^5.0"
+        "aplus/helpers": "^6.0"
     },
     "require-dev": {
         "ext-xdebug": "*",
