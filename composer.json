@@ -54,7 +54,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Framework\\Database\\Extra\\": "src/"
+            "Aplus\\Database\\Extra\\": "src/"
         }
     },
     "autoload-dev": {
