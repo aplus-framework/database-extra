@@ -38,7 +38,7 @@ The migration files are according to the template below:
 
 .. code-block:: php
 
-    use Framework\Database\Extra\Migration;
+    use Aplus\Database\Extra\Migration;
     
     return new class() extends Migration
     {
@@ -79,8 +79,8 @@ Inside the migration directory, we create the ``100_create_table_users.php`` fil
 
 .. code-block:: php
 
-    use Framework\Database\Definition\Table\TableDefinition;
-    use Framework\Database\Extra\Migration;
+    use Aplus\Database\Definition\Table\TableDefinition;
+    use Aplus\Database\Extra\Migration;
     
     return new class() extends Migration
     {
@@ -111,8 +111,8 @@ The file below creates the Posts table, which will run after
 
 .. code-block:: php
 
-    use Framework\Database\Definition\Table\TableDefinition;
-    use Framework\Database\Extra\Migration;
+    use Aplus\Database\Definition\Table\TableDefinition;
+    use Aplus\Database\Extra\Migration;
     
     return new class() extends Migration
     {
@@ -148,8 +148,8 @@ the way up and removing them on the way down:
 
 .. code-block:: php
 
-    use Framework\Database\Definition\Table\TableDefinition;
-    use Framework\Database\Extra\Migration;
+    use Aplus\Database\Definition\Table\TableDefinition;
+    use Aplus\Database\Extra\Migration;
     
     return new class() extends Migration
     {
@@ -173,7 +173,7 @@ the way up and removing them on the way down:
         }
     };
 
-The files must return an instance of the ``Framework\Database\Extra\Migration``
+The files must return an instance of the ``Aplus\Database\Extra\Migration``
 class to run in a Migrator.
 
 Migrator
@@ -186,8 +186,8 @@ the migrations are stored.
 
 .. code-block:: php
 
-    use Framework\Database\Database;
-    use Framework\Database\Extra\Migrator;
+    use Aplus\Database\Database;
+    use Aplus\Database\Extra\Migrator;
 
     $database = new Database('root', 'password', 'app');
     
@@ -251,12 +251,12 @@ Seeding is a way of inserting data into database tables for testing purposes.
 
 A Seeder is the class for performing this task.
 
-They must extend the ``Framework\Database\Extra\Seeder`` class and perform data
+They must extend the ``Aplus\Database\Extra\Seeder`` class and perform data
 insertion in the ``run`` method:
 
 .. code-block:: php
 
-    use Framework\Database\Extra\Seeder;
+    use Aplus\Database\Extra\Seeder;
     
     class SeederName extends Seeder
     {
@@ -272,7 +272,7 @@ Let's look at an example for inserting data into the Users table:
 
 .. code-block:: php
 
-    use Framework\Database\Extra\Seeder;
+    use Aplus\Database\Extra\Seeder;
     
     class UsersSeeder extends Seeder
     {
@@ -323,7 +323,7 @@ method to call and run other seeders:
 
 .. code-block:: php
 
-    use Framework\Database\Extra\Seeder;
+    use Aplus\Database\Extra\Seeder;
     
     class DatabaseSeeder extends Seeder
     {
@@ -340,7 +340,7 @@ Once this is done, just run the main seeder, which will call all the others to r
 
 .. code-block:: php
 
-    use Framework\Database\Database;
+    use Aplus\Database\Database;
 
     $database = new Database('root', 'password', 'app');
 
